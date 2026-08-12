@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Loader2 } from "lucide-react";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { loginSchema, type LoginInput } from "../schemas/auth.schema";
 import type { AuthView } from "../types";
 import { GithubIcon, GoogleIcon } from "./social-icons";
+import { authClient } from "@/lib/auth-client";
 
 interface LoginFormProps { onSwitchView: (view: AuthView) => void; }
 
@@ -19,14 +21,19 @@ const socialClass = "h-11 rounded-xl border-black/[0.10] bg-white/60 text-xs fon
 export function LoginForm({ onSwitchView }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
 
-  const onSubmit = async (_data: LoginInput) => {
+  const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
     setError(null);
-    try { await new Promise((resolve) => setTimeout(resolve, 1000)); }
-    catch (err) { setError(err instanceof Error ? err.message : "E-mail ou senha inválidos"); }
-    finally { setIsLoading(false); }
+    const result = await authClient.signIn.email({ ...data, callbackURL: "/dashboard" });
+    if (result.error) {
+      setError(result.error.message || "E-mail ou senha inválidos");
+      setIsLoading(false);
+      return;
+    }
+    router.push("/dashboard");
   };
 
   return <div className="flex flex-col gap-5">

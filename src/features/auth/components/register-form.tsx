@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowRight, Loader2 } from "lucide-react";
@@ -10,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { registerSchema, type RegisterInput } from "../schemas/auth.schema";
 import type { AuthView } from "../types";
 import { GithubIcon, GoogleIcon } from "./social-icons";
+import { authClient } from "@/lib/auth-client";
 
 interface RegisterFormProps { onSwitchView: (view: AuthView) => void; }
 
@@ -19,8 +21,19 @@ const socialClass = "h-10 rounded-xl border-black/[0.10] bg-white/60 text-xs fon
 export function RegisterForm({ onSwitchView }: RegisterFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const { register, handleSubmit, formState: { errors } } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
-  const onSubmit = async (_data: RegisterInput) => { setIsLoading(true); setError(null); try { await new Promise((resolve) => setTimeout(resolve, 1000)); onSwitchView("login"); } catch (err) { setError(err instanceof Error ? err.message : "Erro ao criar conta"); } finally { setIsLoading(false); } };
+  const onSubmit = async ({ name, email, password }: RegisterInput) => {
+    setIsLoading(true);
+    setError(null);
+    const result = await authClient.signUp.email({ name, email, password, callbackURL: "/dashboard" });
+    if (result.error) {
+      setError(result.error.message || "Erro ao criar conta");
+      setIsLoading(false);
+      return;
+    }
+    router.push("/dashboard");
+  };
 
   return <div className="flex flex-col gap-4">
     <div className="grid grid-cols-2 gap-3"><Button type="button" variant="outline" className={socialClass} disabled={isLoading}><GoogleIcon className="mr-2 h-4 w-4" />Google</Button><Button type="button" variant="outline" className={socialClass} disabled={isLoading}><GithubIcon className="mr-2 h-4 w-4" />GitHub</Button></div>
