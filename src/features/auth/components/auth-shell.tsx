@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Check, Moon, ShieldCheck, Sparkles, Sun } from "lucide-react";
+import { Check, Moon, ShieldCheck, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoginForm } from "./login-form";
@@ -56,50 +56,33 @@ export function AuthShell({ initialView }: AuthShellProps) {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f7f7f8] px-4 py-6 selection:bg-black selection:text-white dark:bg-[#09090b] sm:px-6 lg:p-8">
-      <div className="auth-grid pointer-events-none absolute inset-0 opacity-50 dark:opacity-20" />
-      <div className="pointer-events-none absolute -left-32 top-[-12rem] h-[32rem] w-[32rem] rounded-full bg-black/[0.05] blur-[100px] dark:bg-white/[0.05]" />
-      <div className="pointer-events-none absolute -right-28 bottom-[-12rem] h-[28rem] w-[28rem] rounded-full bg-black/[0.035] blur-[100px] dark:bg-white/[0.035]" />
-
-      <div className="relative mx-auto grid min-h-[calc(100vh-3rem)] w-full max-w-[1180px] overflow-hidden rounded-[2rem] border border-black/[0.07] bg-white/70 shadow-[0_28px_80px_-32px_rgba(15,23,42,0.32)] backdrop-blur-xl dark:border-white/[0.09] dark:bg-white/[0.03] lg:grid-cols-[1.08fr_0.92fr]">
+    <main className="relative h-screen overflow-hidden bg-[#f7f7f8] px-4 py-6 selection:bg-black selection:text-white dark:bg-[#09090b] sm:px-6 lg:p-8">
+      <div className="relative mx-auto grid h-[calc(100vh-4rem)] w-full max-w-[980px] overflow-hidden rounded-[2rem] border border-black/[0.07] bg-white/70 shadow-[0_28px_80px_-32px_rgba(15,23,42,0.32)] backdrop-blur-xl dark:border-white/[0.09] dark:bg-white/[0.03] lg:grid-cols-[1.08fr_0.92fr]">
         <section className="relative hidden overflow-hidden bg-[#111111] p-10 text-white lg:flex lg:flex-col xl:p-14">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(255,255,255,0.13),transparent_24%),radial-gradient(circle_at_80%_90%,rgba(255,255,255,0.08),transparent_30%)]" />
-          <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,.07)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.07)_1px,transparent_1px)] [background-size:44px_44px]" />
-          <div className="relative flex items-center gap-3">
+                    <div className="relative flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-sm font-black tracking-[-0.12em] shadow-lg shadow-black/20">NX</div>
             <span className="text-base font-semibold tracking-[-0.02em]">NexerX</span>
           </div>
 
           <div className="relative my-auto max-w-md py-14">
-            <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-medium tracking-wide text-neutral-200 backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5" />
-              Feito para quem faz acontecer
-            </div>
             <h1 className="text-4xl font-semibold leading-[1.08] tracking-[-0.055em] xl:text-5xl">Menos operação.<br />Mais impulso.</h1>
             <p className="mt-6 max-w-sm text-sm leading-6 text-neutral-300/75">O espaço de trabalho que deixa seu negócio mais organizado, claro e pronto para crescer.</p>
           </div>
 
-          <div className="relative grid grid-cols-2 gap-3">
-            <div className="rounded-2xl border border-white/10 bg-white/[0.08] p-4 backdrop-blur-sm">
-              <div className="mb-5 h-1.5 w-16 rounded-full bg-white" />
-              <p className="text-2xl font-semibold tracking-[-0.04em]">Tudo em foco</p>
-              <p className="mt-1 text-xs text-neutral-400">Clientes, projetos e finanças.</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.08] p-4 backdrop-blur-sm">
-              <ShieldCheck className="mb-4 h-5 w-5 text-neutral-300" />
-              <p className="text-xs font-medium leading-5 text-neutral-200">Seu espaço é privado, seguro e sempre seu.</p>
-            </div>
+          <div className="relative flex items-center gap-2 border-t border-white/15 pt-5 text-xs text-neutral-400">
+            <ShieldCheck className="h-4 w-4 text-neutral-300" />
+            Seu workspace, com a clareza que seu trabalho merece.
           </div>
         </section>
 
-        <section className="relative flex min-h-full items-center justify-center px-5 py-12 sm:px-10 lg:px-14">
+        <section className="relative flex min-h-full items-center justify-center px-5 py-8 sm:px-10 lg:px-12">
           <div className="absolute left-6 top-6 flex items-center gap-2 lg:hidden">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#111111] text-[11px] font-black tracking-[-0.1em] text-white">NX</div>
             <span className="text-sm font-semibold tracking-[-0.02em] text-foreground">NexerX</span>
           </div>
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }} className="w-full max-w-[390px] pt-10 lg:pt-0">
+          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }} className="w-full max-w-[360px] pt-8 lg:pt-0">
             <Card className="border-0 bg-transparent p-0 shadow-none">
-              <CardHeader className="p-0 pb-7">
+              <CardHeader className="p-0 pb-6">
                 <div className="mb-5 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600 dark:text-neutral-300">
                   <span className="h-px w-5 bg-current" />
                   {config.eyebrow}
@@ -121,7 +104,7 @@ export function AuthShell({ initialView }: AuthShellProps) {
                 </AnimatePresence>
               </CardContent>
             </Card>
-            <div className="mt-8 flex items-center justify-center gap-2 text-[11px] text-muted-foreground"><Check className="h-3.5 w-3.5 text-neutral-500" /> Seus dados são protegidos com segurança.</div>
+            <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-muted-foreground"><Check className="h-3.5 w-3.5 text-neutral-500" /> Seus dados são protegidos com segurança.</div>
           </motion.div>
         </section>
       </div>
