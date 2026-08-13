@@ -1,17 +1,26 @@
-"use client";
-
-import { useEffect } from "react";
-
+// IMPORTANTE: Sem "use client". Este componente deve ser um Server Component.
 export function ThemeInitializer() {
-  useEffect(() => {
-    const root = document.documentElement;
-    const savedTheme = localStorage.getItem("theme");
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const currentTheme = savedTheme || (systemPrefersDark ? "dark" : "light");
+  const themeScript = `
+    (function() {
+      try {
+        var root = document.documentElement;
+        var savedTheme = localStorage.getItem("theme");
+        var systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var currentTheme = savedTheme || (systemPrefersDark ? "dark" : "light");
 
-    root.classList.toggle("dark", currentTheme === "dark");
-    root.style.colorScheme = currentTheme;
-  }, []);
+        if (currentTheme === "dark") {
+          root.classList.add("dark");
+        } else {
+          root.classList.remove("dark");
+        }
+        root.style.colorScheme = currentTheme;
+      } catch (e) {}
+    })();
+  `;
 
-  return null;
+  return (
+    <script
+      dangerouslySetInnerHTML={{ __html: themeScript }}
+    />
+  );
 }
