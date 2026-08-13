@@ -1,8 +1,5 @@
 @import "tailwindcss";
 
-/* ==========================================================================
-   Estratégia de Classe (.dark no html) - Tailwind v4
-   ========================================================================== */
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
@@ -94,7 +91,6 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
-    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   :focus-visible {
@@ -102,38 +98,41 @@
   }
 }
 
-/* ==========================================================================
-   Efeitos Ambientais e Moldura Neon Glass
-   ========================================================================== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
 
 .ambient-glow-teal {
   position: absolute;
-  width: 650px;
-  height: 650px;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(13, 148, 136, 0.18) 0%, transparent 70%);
-  filter: blur(130px);
+  background: radial-gradient(circle, rgba(13, 148, 136, 0.15) 0%, rgba(13, 148, 136, 0.05) 40%, transparent 70%);
   pointer-events: none;
+  transform: translateZ(0);
 }
 
 .ambient-glow-indigo {
   position: absolute;
-  width: 700px;
-  height: 700px;
+  width: 650px;
+  height: 650px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
-  filter: blur(140px);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0.04) 40%, transparent 70%);
   pointer-events: none;
+  transform: translateZ(0);
 }
 
 .glowing-frame {
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transform: translateZ(0);
   box-shadow: 
     0 0 0 1px rgba(255, 255, 255, 0.1),
     0 0 30px -5px rgba(45, 212, 191, 0.22),
     0 25px 60px -15px rgba(0, 0, 0, 0.6);
-  transition: all 0.4s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .light .glowing-frame {

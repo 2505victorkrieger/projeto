@@ -36,10 +36,6 @@ import {
 
 export type AuthView = "login" | "register";
 
-/* ==========================================================================
-   Ícones Vetoriais das Mídias Sociais
-   ========================================================================== */
-
 function GoogleIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg className={`h-4 w-4 shrink-0 ${className || ""}`} viewBox="0 0 24 24" {...props}>
@@ -75,22 +71,14 @@ function GithubIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   );
 }
 
-/* ==========================================================================
-   Classes Utilitárias de Componentes de Vidro
-   ========================================================================== */
-
 const glassInputWrapper =
-  "relative flex items-center transition-all rounded-xl border border-zinc-300/90 dark:border-white/10 bg-white dark:bg-white/[0.03] focus-within:bg-white dark:focus-within:bg-white/[0.06] focus-within:border-teal-600 dark:focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/20";
+  "relative flex items-center transition-colors duration-150 rounded-xl border border-zinc-300/90 dark:border-white/10 bg-white dark:bg-white/[0.03] focus-within:bg-white dark:focus-within:bg-white/[0.06] focus-within:border-teal-600 dark:focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/20";
 
 const glassInputField =
   "h-10.5 w-full bg-transparent px-3.5 pl-10 text-xs font-normal text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
 
 const glassSocialButton =
-  "h-10 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.04] hover:bg-zinc-100/80 hover:border-zinc-300 dark:hover:bg-white/[0.08] dark:hover:border-white/20 text-xs font-semibold text-zinc-900 dark:text-zinc-100 transition-all duration-200 active:scale-[0.98] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
-
-/* ==========================================================================
-   Formulário de Login
-   ========================================================================== */
+  "h-10 w-full rounded-xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.04] hover:bg-zinc-100/80 hover:border-zinc-300 dark:hover:bg-white/[0.08] dark:hover:border-white/20 text-xs font-semibold text-zinc-900 dark:text-zinc-100 transition-colors duration-150 active:scale-[0.98] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:pointer-events-none";
 
 interface LoginFormProps {
   onSwitchView: (view: AuthView) => void;
@@ -99,6 +87,7 @@ interface LoginFormProps {
 function LoginForm({ onSwitchView }: LoginFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -112,7 +101,11 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await authClient.signIn.email({ ...data, callbackURL: "/dashboard" });
+      const result = await authClient.signIn.email({
+        ...data,
+        rememberMe,
+        callbackURL: "/dashboard",
+      });
       if (result?.error) {
         setError(result.error.message || "E-mail ou senha incorretos.");
         setIsLoading(false);
@@ -181,17 +174,9 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
         </div>
 
         <div className="space-y-1.5">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="login-password" className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200">
-              Senha
-            </Label>
-            <Link
-              href="/forgot-password"
-              className="text-[11px] font-medium text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white transition-colors"
-            >
-              Esqueceu?
-            </Link>
-          </div>
+          <Label htmlFor="login-password" className="text-[11px] font-semibold text-zinc-800 dark:text-zinc-200">
+            Senha
+          </Label>
           <div className={glassInputWrapper}>
             <Lock className="absolute left-3.5 h-4 w-4 text-zinc-400 dark:text-zinc-500" />
             <Input
@@ -218,6 +203,28 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
               {errors.password.message}
             </p>
           )}
+
+          <div className="flex items-center justify-between pt-1">
+            <label htmlFor="remember-me" className="flex items-center gap-2 cursor-pointer select-none">
+              <input
+                id="remember-me"
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="h-3.5 w-3.5 rounded border-zinc-300 dark:border-white/20 bg-zinc-100 dark:bg-white/5 text-teal-600 focus:ring-teal-500/20 focus:ring-offset-0 transition-colors cursor-pointer accent-teal-600 dark:accent-teal-400"
+              />
+              <span className="text-[11px] font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">
+                Lembrar-me
+              </span>
+            </label>
+
+            <Link
+              href="/forgot-password"
+              className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 transition-colors"
+            >
+              Esqueceu a senha?
+            </Link>
+          </div>
         </div>
 
         {error && (
@@ -235,7 +242,7 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
         <Button
           type="submit"
           disabled={isLoading}
-          className="group relative h-10.5 w-full overflow-hidden rounded-xl bg-zinc-900 text-xs font-semibold text-white shadow-md transition-all duration-200 hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 dark:disabled:bg-zinc-700"
+          className="group relative h-10.5 w-full overflow-hidden rounded-xl bg-zinc-900 text-xs font-semibold text-white shadow-md transition-colors duration-150 hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 dark:disabled:bg-zinc-700"
         >
           {isLoading ? (
             <span className="inline-flex items-center justify-center gap-2">
@@ -247,7 +254,7 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
           ) : (
             <span className="flex items-center justify-center gap-2">
               Entrar no sistema
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
             </span>
           )}
         </Button>
@@ -266,10 +273,6 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
     </div>
   );
 }
-
-/* ==========================================================================
-   Formulário de Registro
-   ========================================================================== */
 
 interface RegisterFormProps {
   onSwitchView: (view: AuthView) => void;
@@ -291,8 +294,26 @@ function RegisterForm({ onSwitchView }: RegisterFormProps) {
   const watchPassword = watch("password", "");
 
   const hasMinLength = watchPassword.length >= 8;
-  const hasLetter = /[a-zA-Z]/.test(watchPassword);
+  const hasUpper = /[A-Z]/.test(watchPassword);
+  const hasLower = /[a-z]/.test(watchPassword);
   const hasNumber = /[0-9]/.test(watchPassword);
+  const hasSpecial = /[^A-Za-z0-9]/.test(watchPassword);
+
+  const rulesPassed = [hasMinLength, (hasUpper && hasLower), hasNumber, hasSpecial].filter(Boolean).length;
+
+  let strengthLabel = "Fraca";
+  let strengthTextColor = "text-red-500";
+  let strengthBarColor = "bg-red-500";
+
+  if (rulesPassed === 2 || rulesPassed === 3) {
+    strengthLabel = "Média";
+    strengthTextColor = "text-amber-500 dark:text-amber-400";
+    strengthBarColor = "bg-amber-500";
+  } else if (rulesPassed === 4) {
+    strengthLabel = "Forte";
+    strengthTextColor = "text-emerald-500 dark:text-emerald-400";
+    strengthBarColor = "bg-emerald-500";
+  }
 
   const onSubmit = async ({ name, email, password }: RegisterInput) => {
     setIsLoading(true);
@@ -445,17 +466,42 @@ function RegisterForm({ onSwitchView }: RegisterFormProps) {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
+              className="overflow-hidden space-y-2 pt-0.5"
             >
-              <div className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-100/60 dark:bg-white/[0.02] px-3 py-1 font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
-                <span className={`flex items-center gap-1 ${hasMinLength ? "text-emerald-600 dark:text-emerald-400 font-medium" : ""}`}>
-                  <Check className={`h-3 w-3 ${hasMinLength ? "opacity-100" : "opacity-30"}`} /> 8+
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-medium text-zinc-500 dark:text-zinc-400">
+                  Força da senha:
                 </span>
-                <span className={`flex items-center gap-1 ${hasLetter ? "text-emerald-600 dark:text-emerald-400 font-medium" : ""}`}>
-                  <Check className={`h-3 w-3 ${hasLetter ? "opacity-100" : "opacity-30"}`} /> letras
+                <span className={`font-semibold ${strengthTextColor}`}>
+                  {strengthLabel}
                 </span>
-                <span className={`flex items-center gap-1 ${hasNumber ? "text-emerald-600 dark:text-emerald-400 font-medium" : ""}`}>
-                  <Check className={`h-3 w-3 ${hasNumber ? "opacity-100" : "opacity-30"}`} /> números
+              </div>
+
+              <div className="grid grid-cols-4 gap-1.5 h-1.5">
+                {[1, 2, 3, 4].map((step) => (
+                  <div
+                    key={step}
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      step <= rulesPassed
+                        ? strengthBarColor
+                        : "bg-zinc-200 dark:bg-white/10"
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <div className="grid grid-cols-2 gap-1.5 text-[10px] pt-1">
+                <span className={`flex items-center gap-1 ${hasMinLength ? "text-emerald-600 dark:text-emerald-400 font-semibold" : "text-zinc-400 dark:text-zinc-500"}`}>
+                  <Check className={`h-3 w-3 ${hasMinLength ? "opacity-100" : "opacity-30"}`} /> 8+ caracteres
+                </span>
+                <span className={`flex items-center gap-1 ${hasUpper && hasLower ? "text-emerald-600 dark:text-emerald-400 font-semibold" : "text-zinc-400 dark:text-zinc-500"}`}>
+                  <Check className={`h-3 w-3 ${hasUpper && hasLower ? "opacity-100" : "opacity-30"}`} /> Mín. & Máj.
+                </span>
+                <span className={`flex items-center gap-1 ${hasNumber ? "text-emerald-600 dark:text-emerald-400 font-semibold" : "text-zinc-400 dark:text-zinc-500"}`}>
+                  <Check className={`h-3 w-3 ${hasNumber ? "opacity-100" : "opacity-30"}`} /> Números
+                </span>
+                <span className={`flex items-center gap-1 ${hasSpecial ? "text-emerald-600 dark:text-emerald-400 font-semibold" : "text-zinc-400 dark:text-zinc-500"}`}>
+                  <Check className={`h-3 w-3 ${hasSpecial ? "opacity-100" : "opacity-30"}`} /> Símbolos (@#$)
                 </span>
               </div>
             </motion.div>
@@ -477,7 +523,7 @@ function RegisterForm({ onSwitchView }: RegisterFormProps) {
         <Button
           type="submit"
           disabled={isLoading}
-          className="group relative mt-1 h-10.5 w-full overflow-hidden rounded-xl bg-zinc-900 text-xs font-semibold text-white shadow-md transition-all duration-200 hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 dark:disabled:bg-zinc-700"
+          className="group relative mt-1 h-10.5 w-full overflow-hidden rounded-xl bg-zinc-900 text-xs font-semibold text-white shadow-md transition-colors duration-150 hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 dark:disabled:bg-zinc-700"
         >
           {isLoading ? (
             <span className="inline-flex items-center justify-center gap-2">
@@ -489,7 +535,7 @@ function RegisterForm({ onSwitchView }: RegisterFormProps) {
           ) : (
             <span className="flex items-center justify-center gap-2">
               Finalizar cadastro
-              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
             </span>
           )}
         </Button>
@@ -509,10 +555,6 @@ function RegisterForm({ onSwitchView }: RegisterFormProps) {
   );
 }
 
-/* ==========================================================================
-   Shell Principal com Animações Fluidas e Zonas de Segurança Sem Corte
-   ========================================================================== */
-
 interface AuthShellProps {
   initialView: AuthView;
 }
@@ -530,22 +572,28 @@ function AuthShell({ initialView }: AuthShellProps) {
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    document.documentElement.style.colorScheme = nextTheme;
-    localStorage.setItem("theme", nextTheme);
+
+    const applyTheme = () => {
+      setTheme(nextTheme);
+      document.documentElement.classList.toggle("dark", nextTheme === "dark");
+      document.documentElement.style.colorScheme = nextTheme;
+      localStorage.setItem("theme", nextTheme);
+    };
+
+    if (typeof document !== "undefined" && "startViewTransition" in document) {
+      (document as unknown as { startViewTransition: (cb: () => void) => void }).startViewTransition(applyTheme);
+    } else {
+      applyTheme();
+    }
   };
 
   const isRegister = view === "register";
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-center bg-zinc-100 dark:bg-[#030305] p-4 sm:p-6 lg:p-8 overflow-hidden transition-colors duration-300">
-      
-      {/* Luzes Ambientais de Fundo */}
+    <main className="relative flex min-h-screen w-full items-center justify-center bg-zinc-100 dark:bg-[#030305] p-4 sm:p-6 lg:p-8 overflow-hidden transition-colors duration-200">
       <div className="ambient-glow-teal -top-40 -left-40 opacity-80 dark:opacity-60" />
       <div className="ambient-glow-indigo -bottom-40 -right-40 opacity-70 dark:opacity-50" />
 
-      {/* Botão Flutuante do Tema */}
       {mounted && (
         <Button
           type="button"
@@ -559,42 +607,32 @@ function AuthShell({ initialView }: AuthShellProps) {
         </Button>
       )}
 
-      {/* Container Principal Expandido para 980px */}
       <div className="glowing-frame relative z-10 w-full max-w-[980px] min-h-[580px] overflow-hidden rounded-3xl border border-zinc-200/80 dark:border-white/10 bg-white/80 dark:bg-[#08080c]/80 text-zinc-900 dark:text-white">
-        
-        {/* LAYOUT DESKTOP */}
         <div className="hidden lg:grid grid-cols-2 min-h-[580px] relative w-full h-full">
-          
-          {/* Formulário de Registro (Esquerda) */}
           <div className="p-8 xl:p-10 flex flex-col justify-center max-w-[360px] mx-auto w-full">
             {isRegister && <RegisterForm onSwitchView={setView} />}
           </div>
 
-          {/* Formulário de Login (Direita) */}
           <div className="p-8 xl:p-10 flex flex-col justify-center max-w-[360px] mx-auto w-full">
             {!isRegister && <LoginForm onSwitchView={setView} />}
           </div>
 
-          {/* PAINEL OVERLAY DIAGONAL DESLIZANTE COM LARGURA DE 53% E ZONAS DE SEGURANÇA */}
           <motion.div
-            className="absolute top-0 bottom-0 w-[53%] bg-[#08080d] text-white p-8 xl:p-10 flex flex-col justify-between z-20 overflow-hidden shadow-2xl"
+            className="absolute top-0 bottom-0 w-[53%] bg-[#08080d] text-white p-8 xl:p-10 flex flex-col justify-between z-20 overflow-hidden shadow-2xl transform-gpu will-change-transform"
             initial={false}
             animate={{
               x: isRegister ? "88.6%" : "0%",
               clipPath: isRegister
-                ? "polygon(12% 0, 100% 0, 100% 100%, 0% 100%)" // Diagonal (\)
-                : "polygon(0 0, 100% 0, 88% 100%, 0 100%)",   // Diagonal (/)
+                ? "polygon(12% 0, 100% 0, 100% 100%, 0% 100%)"
+                : "polygon(0 0, 100% 0, 88% 100%, 0 100%)",
             }}
             transition={{
-              type: "spring",
-              stiffness: 240,
-              damping: 26,
+              duration: 0.35,
+              ease: [0.16, 1, 0.3, 1],
             }}
           >
-            {/* Gradient interno de iluminação */}
             <div className="absolute inset-0 bg-gradient-to-br from-teal-500/10 via-transparent to-indigo-500/5 pointer-events-none" />
 
-            {/* Topbar Institucional com recuo para não encostar na diagonal do Registro */}
             <div className={`relative z-10 flex items-center justify-between ${isRegister ? "pl-8" : "pr-2"}`}>
               <div className="flex items-center gap-2.5">
                 <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white font-mono text-xs font-black text-black shadow-md">
@@ -608,14 +646,13 @@ function AuthShell({ initialView }: AuthShellProps) {
               </span>
             </div>
 
-            {/* Conteúdo Central Animado */}
             <AnimatePresence mode="wait">
               <motion.div
                 key={isRegister ? "register-info" : "login-info"}
-                initial={{ opacity: 0, y: 10, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15, ease: "easeOut" }}
                 className={`relative z-10 my-auto py-4 max-w-[270px] ${
                   isRegister ? "ml-auto mr-4" : "ml-2 mr-auto"
                 }`}
@@ -629,7 +666,6 @@ function AuthShell({ initialView }: AuthShellProps) {
                     : "Acesse seu painel para acompanhar clientes, propostas e entregas do seu dia."}
                 </p>
 
-                {/* Pilares Reais do CRM */}
                 <div className="mt-6 space-y-3 border-t border-white/10 pt-5">
                   <div className="flex items-center gap-3 text-xs text-zinc-300">
                     <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-teal-500/15 text-teal-400 border border-teal-500/20">
@@ -653,7 +689,6 @@ function AuthShell({ initialView }: AuthShellProps) {
               </motion.div>
             </AnimatePresence>
 
-            {/* Footer com Recuo de Segurança à Direita no Login */}
             <div className={`relative z-10 flex items-center justify-between border-t border-white/10 pt-4 text-[11px] text-zinc-400 ${!isRegister ? "pr-10" : "pl-6"}`}>
               <span>© 2026 NexerX</span>
               <span className="font-medium text-zinc-300">Feito para Freelancers</span>
@@ -661,7 +696,6 @@ function AuthShell({ initialView }: AuthShellProps) {
           </motion.div>
         </div>
 
-        {/* LAYOUT MOBILE (< lg) */}
         <div className="lg:hidden flex flex-col p-6 sm:p-8">
           <div className="flex items-center gap-2.5 mb-6">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-900 dark:bg-white font-mono text-xs font-black text-white dark:text-black">
@@ -683,15 +717,10 @@ function AuthShell({ initialView }: AuthShellProps) {
             </motion.div>
           </AnimatePresence>
         </div>
-
       </div>
     </main>
   );
 }
-
-/* ==========================================================================
-   Entrada da Página
-   ========================================================================== */
 
 function AuthFeaturePageContent() {
   const searchParams = useSearchParams();

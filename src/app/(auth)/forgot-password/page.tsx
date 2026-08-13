@@ -24,7 +24,7 @@ import {
 } from "@/features/auth/schemas/auth.schema";
 
 const glassInputWrapper =
-  "relative flex items-center transition-all rounded-xl border border-zinc-300 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] focus-within:bg-white dark:focus-within:bg-white/[0.06] focus-within:border-teal-600 dark:focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/20";
+  "relative flex items-center transition-colors duration-150 rounded-xl border border-zinc-300 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] focus-within:bg-white dark:focus-within:bg-white/[0.06] focus-within:border-teal-600 dark:focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/20";
 
 const glassInputField =
   "h-10.5 w-full bg-transparent px-3.5 pl-10 text-xs font-normal text-zinc-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0";
@@ -44,10 +44,19 @@ export default function ForgotPasswordPage() {
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";
-    setTheme(nextTheme);
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    document.documentElement.style.colorScheme = nextTheme;
-    localStorage.setItem("theme", nextTheme);
+
+    const applyTheme = () => {
+      setTheme(nextTheme);
+      document.documentElement.classList.toggle("dark", nextTheme === "dark");
+      document.documentElement.style.colorScheme = nextTheme;
+      localStorage.setItem("theme", nextTheme);
+    };
+
+    if (typeof document !== "undefined" && "startViewTransition" in document) {
+      (document as unknown as { startViewTransition: (cb: () => void) => void }).startViewTransition(applyTheme);
+    } else {
+      applyTheme();
+    }
   };
 
   const {
@@ -63,7 +72,6 @@ export default function ForgotPasswordPage() {
     setError(null);
 
     try {
-      // TODO: integrar com o endpoint real de recuperação de senha
       await new Promise((resolve) => setTimeout(resolve, 800));
       setSubmitted(true);
     } catch {
@@ -74,12 +82,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="relative flex min-h-screen w-full items-center justify-center bg-zinc-100 dark:bg-[#030305] px-4 py-10 transition-colors duration-300 sm:px-6 lg:px-8 overflow-hidden">
-      {/* Glows Ambientais de Fundo */}
+    <main className="relative flex min-h-screen w-full items-center justify-center bg-zinc-100 dark:bg-[#030305] px-4 py-10 transition-colors duration-200 sm:px-6 lg:px-8 overflow-hidden">
       <div className="ambient-glow-teal -top-40 -left-40 opacity-80 dark:opacity-60" />
       <div className="ambient-glow-indigo -bottom-40 -right-40 opacity-70 dark:opacity-50" />
 
-      {/* Alternador de Tema Flutuante */}
       {mounted && (
         <Button
           type="button"
@@ -87,19 +93,16 @@ export default function ForgotPasswordPage() {
           size="icon"
           onClick={toggleTheme}
           aria-label={theme === "dark" ? "Alternar para modo claro" : "Alternar para modo escuro"}
-          className="fixed top-4 right-4 z-50 h-9 w-9 rounded-xl border border-zinc-200 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-md text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-all cursor-pointer"
+          className="fixed top-4 right-4 z-50 h-9 w-9 rounded-xl border border-zinc-200 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-md text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-white/10 hover:text-zinc-900 dark:hover:text-white transition-colors duration-150 cursor-pointer"
         >
           {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>
       )}
 
-      {/* Card Principal */}
-      <div className="glowing-frame relative z-10 w-full max-w-[440px] overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/80 text-zinc-900 dark:border-white/10 dark:bg-[#08080c]/80 dark:text-white shadow-2xl transition-all">
-        {/* Barra de destaque superior */}
+      <div className="glowing-frame relative z-10 w-full max-w-[440px] overflow-hidden rounded-3xl border border-zinc-200/80 bg-white/80 text-zinc-900 dark:border-white/10 dark:bg-[#08080c]/80 dark:text-white shadow-2xl">
         <div className="h-1 w-full bg-gradient-to-r from-teal-500 via-cyan-500 to-indigo-500" />
 
         <div className="p-6 sm:p-8">
-          {/* Cabeçalho de Marca */}
           <div className="mb-6 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-900 font-mono text-xs font-black text-white dark:bg-white dark:text-black shadow-md">
@@ -172,7 +175,7 @@ export default function ForgotPasswordPage() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="group relative h-10.5 w-full overflow-hidden rounded-xl bg-zinc-900 text-xs font-semibold text-white shadow-md transition-all duration-200 hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 dark:disabled:bg-zinc-700"
+                  className="group relative h-10.5 w-full overflow-hidden rounded-xl bg-zinc-900 text-xs font-semibold text-white shadow-md transition-colors duration-150 hover:bg-black active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-100 dark:disabled:bg-zinc-700"
                 >
                   {isLoading ? (
                     <span className="inline-flex items-center justify-center gap-2">
@@ -184,7 +187,7 @@ export default function ForgotPasswordPage() {
                   ) : (
                     <span className="flex items-center justify-center gap-2">
                       Enviar link de acesso
-                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
                     </span>
                   )}
                 </Button>
@@ -215,10 +218,9 @@ export default function ForgotPasswordPage() {
                 </p>
               </div>
 
-              {/* Botão sem aninhamento HTML inválido */}
               <Link
                 href="/auth"
-                className="inline-flex h-10.5 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 text-xs font-semibold text-zinc-800 transition-all hover:bg-zinc-100 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200 dark:hover:bg-white/[0.08] active:scale-[0.98] cursor-pointer"
+                className="inline-flex h-10.5 w-full items-center justify-center gap-2 rounded-xl border border-zinc-200 bg-white px-4 text-xs font-semibold text-zinc-800 transition-colors duration-150 hover:bg-zinc-100 dark:border-white/10 dark:bg-white/[0.04] dark:text-zinc-200 dark:hover:bg-white/[0.08] active:scale-[0.98] cursor-pointer"
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
                 Voltar ao login
