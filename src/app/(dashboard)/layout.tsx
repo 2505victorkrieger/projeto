@@ -1,13 +1,13 @@
 import type { ReactNode } from "react";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/app-shell";
-import { auth } from "@/server/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  const supabase = await createSupabaseServerClient();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (!session) {
+  if (!user) {
     redirect("/auth");
   }
 

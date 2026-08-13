@@ -26,7 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   loginSchema,
   registerSchema,
@@ -101,13 +101,13 @@ function LoginForm({ onSwitchView }: LoginFormProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await authClient.signIn.email({
-        ...data,
-        rememberMe,
-        callbackURL: "/dashboard",
+      const supabase = createSupabaseBrowserClient();
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
       });
-      if (result?.error) {
-        setError(result.error.message || "E-mail ou senha incorretos.");
+      if (signInError) {
+        setError(signInError.message || "E-mail ou senha incorretos.");
         setIsLoading(false);
         return;
       }
@@ -319,9 +319,14 @@ function RegisterForm({ onSwitchView }: RegisterFormProps) {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await authClient.signUp.email({ name, email, password, callbackURL: "/dashboard" });
-      if (result?.error) {
-        setError(result.error.message || "Não foi possível criar a conta.");
+      const supabase = createSupabaseBrowserClient();
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      });
+      if (signUpError) {
+        setError(signUpError.message || "Não foi possível criar a conta.");
         setIsLoading(false);
         return;
       }

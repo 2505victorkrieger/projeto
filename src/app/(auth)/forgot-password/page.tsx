@@ -22,6 +22,7 @@ import {
   forgotPasswordSchema,
   type ForgotPasswordInput,
 } from "@/features/auth/schemas/auth.schema";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const glassInputWrapper =
   "relative flex items-center transition-colors duration-150 rounded-xl border border-zinc-300 dark:border-white/10 bg-white/80 dark:bg-white/[0.03] focus-within:bg-white dark:focus-within:bg-white/[0.06] focus-within:border-teal-600 dark:focus-within:border-teal-400 focus-within:ring-2 focus-within:ring-teal-500/20";
@@ -67,12 +68,20 @@ export default function ForgotPasswordPage() {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const onSubmit = async (_data: ForgotPasswordInput) => {
+  const onSubmit = async ({ email }: ForgotPasswordInput) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
+      const supabase = createSupabaseBrowserClient();
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?view=login`,
+      });
+      if (resetError) {
+        setError(resetError.message || "Não foi possível solicitar a redefinição de senha.");
+        setIsLoading(false);
+        return;
+      }
       setSubmitted(true);
     } catch {
       setError("Não foi possível solicitar a redefinição de senha.");
